@@ -1,23 +1,19 @@
 package su.sirus.launcher;
 
 import javafx.application.Platform;
-import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.AsyncResult;
+import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import su.sirus.launcher.responses.PatchListResponse;
+import su.sirus.launcher.events.PatchListDownloaded;
 import su.sirus.launcher.services.DownloadService;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.concurrent.Future;
 
 @Component
 public class MainScreenController
@@ -43,16 +39,21 @@ public class MainScreenController
 
     public void startDownloading()
     {
-        downloadService.downloadPatchList().thenAccept(r -> {
-            // patchCheckerService.checkFiles()
-            Platform.runLater(() -> {
-                statusLabel.setText("Downloading patch list...");
-                statusLabel.setText("Download completed, found: " + r.getPatches().size() + " files");
-            });
+        downloadService.downloadPatchList();
+    }
+
+    @EventListener
+    public void handlePatchListDownloadedEvent(PatchListDownloaded patchListDownloaded)
+    {
+        Platform.runLater(() -> {
+            statusLabel.setText("Download completed, found: " + patchListDownloaded.getPatchListResponse().getPatches().size() + " files");
         });
     }
 
-    @Scheduled(fixedRate = 20000)
+    /**
+     * Reload configuration every 3 minutes
+     */
+    @Scheduled(fixedRate = 3 * 60 * 1000)
     public void reportCurrentTime()
     {
         this.startDownloading();
