@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.effect.*?>
+<?import com.jfoenix.controls.*?>
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ProgressBar?>
@@ -10,37 +15,48 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
+<?import com.jfoenix.controls.JFXButton?>
 
-<GridPane alignment="center" hgap="10" vgap="10" xmlns="http://javafx.com/javafx/8.0.121"
-          xmlns:fx="http://javafx.com/fxml/1" fx:controller="su.sirus.launcher.MainScreenController">
+<GridPane alignment="center" hgap="10" vgap="10" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="su.sirus.launcher.MainScreenController">
     <columnConstraints>
-        <ColumnConstraints/>
+        <ColumnConstraints />
     </columnConstraints>
     <rowConstraints>
-        <RowConstraints/>
+        <RowConstraints />
     </rowConstraints>
-    <Pane prefHeight="480.0" prefWidth="640.0">
-        <TabPane prefHeight="480.0" prefWidth="640.0" tabClosingPolicy="UNAVAILABLE">
-            <tabs>
-                <Tab text="Загрузка">
-                    <content>
-                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="480.0" prefWidth="762.0">
-                            <children>
-                                <Button fx:id="startBtn" layoutX="565.0" layoutY="419.0" mnemonicParsing="false"
-                                        onAction="#actionStart" text="Загрузка"/>
-                                <ProgressBar layoutX="14.0" layoutY="421.0" prefHeight="17.0" prefWidth="537.0"
-                                             progress="0.0"/>
-                                <Label layoutX="14.0" layoutY="14.0" text="Some text" fx:id="statusLabel"/>
-                            </children>
-                        </AnchorPane>
-                    </content>
-                </Tab>
-                <Tab text="Настройки">
-                    <content>
-                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="213.0" prefWidth="524.0"/>
-                    </content>
-                </Tab>
-            </tabs>
-        </TabPane>
-    </Pane>
+   <children>
+       <Pane prefHeight="480.0" prefWidth="640.0">
+          <children>
+              <TabPane prefHeight="480.0" prefWidth="640.0" tabClosingPolicy="UNAVAILABLE">
+                  <tabs>
+                      <Tab text="Обновления">
+                          <content>
+                              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="480.0" prefWidth="762.0">
+                                  <children>
+                                      <Button fx:id="startBtn" layoutX="575.0" layoutY="419.0" mnemonicParsing="false" onAction="#actionStart" text="Играть" />
+                                      <ProgressBar layoutX="14.0" layoutY="421.0" prefHeight="17.0" prefWidth="549.0" progress="0.0" />
+                                      <Label fx:id="statusLabel" layoutX="14.0" layoutY="14.0" text="Loading patch list..." />
+                                  </children>
+                              </AnchorPane>
+                          </content>
+                      </Tab>
+                      <Tab text="Настройки">
+                          <content>
+                              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="213.0" prefWidth="524.0">
+                           <children>
+                              <Pane prefHeight="71.0" prefWidth="640.0" styleClass=".settings__item">
+                                 <children>
+                                    <Label layoutX="14.0" layoutY="29.0" text="Дерриктория с игрой:" />
+                                    <Label fx:id="settingsGamePath" layoutX="136.0" layoutY="29.0" text="Не выбрана" />
+                                    <Button fx:id="changeGameDir" layoutX="561.0" layoutY="25.0" mnemonicParsing="false" onAction="#actionChangeDirectory" text="Изменить" />
+                                 </children>
+                              </Pane>
+                           </children></AnchorPane>
+                          </content>
+                      </Tab>
+                  </tabs>
+              </TabPane>
+          </children>
+       </Pane>
+   </children>
 </GridPane>

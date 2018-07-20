@@ -10,7 +10,7 @@ import java.util.ArrayList;
 public class PatchListResponse
 {
     ArrayList<Patch> patches;
-    ArrayList<Delete> deletes;
+    ArrayList<Delete> delete;
 
     public ArrayList<Patch> getPatches()
     {
@@ -22,13 +22,13 @@ public class PatchListResponse
         this.patches = patches;
     }
 
-    public ArrayList<Delete> getDeletes()
+    public ArrayList<Delete> getDelete()
     {
-        return deletes;
+        return delete;
     }
 
-    public void setDeletes(ArrayList<Delete> deletes)
+    public void setDelete(ArrayList<Delete> deletes)
     {
-        this.deletes = deletes;
+        this.delete = deletes;
     }
 }

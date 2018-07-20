@@ -16,9 +16,11 @@ public class SirusLauncherApplication extends Application {
 
     private ConfigurableApplicationContext springContext;
     private Parent root;
+    private Stage primaryStage;
 
     @Override
-    public void init() throws Exception {
+    public void init() throws Exception
+    {
         springContext = SpringApplication.run(SirusLauncherApplication.class);
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/main.fxml"));
         fxmlLoader.setControllerFactory(springContext::getBean);
@@ -28,13 +30,19 @@ public class SirusLauncherApplication extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception
     {
-        primaryStage.setTitle(springContext.getEnvironment().getProperty("app.name"));
-        primaryStage.setScene(new Scene(root, 640, 480));
-        primaryStage.show();
+        this.primaryStage = primaryStage;
+        this.primaryStage.setTitle(springContext.getEnvironment().getProperty("app.name"));
+
+        Scene scene = new Scene(root, 640, 480);
+        scene.getStylesheets().add("app.css");
+
+        this.primaryStage.setScene(scene);
+        this.primaryStage.show();
     }
 
     @Override
-    public void stop() throws Exception {
+    public void stop() throws Exception
+    {
         springContext.stop();
     }
 
