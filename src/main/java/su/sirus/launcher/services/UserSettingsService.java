@@ -28,7 +28,7 @@ public class UserSettingsService
 
     private UserSettings userSettings;
 
-    private static final Logger log = LoggerFactory.getLogger(MainScreenController.class);
+    private static final Logger log = LoggerFactory.getLogger(UserSettingsService.class);
 
     @Autowired
     public UserSettingsService(ApplicationEventPublisher publisher)

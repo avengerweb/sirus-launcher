@@ -16,14 +16,17 @@ import org.springframework.stereotype.Component;
 import su.sirus.launcher.events.PatchListDownloaded;
 import su.sirus.launcher.events.UserSettingsUpdated;
 import su.sirus.launcher.services.DownloadService;
+import su.sirus.launcher.services.FileCheckService;
 import su.sirus.launcher.services.UserSettingsService;
 
 import java.io.File;
-import java.text.SimpleDateFormat;
+import java.io.IOException;
 
 @Component
 public class MainScreenController
 {
+    AppState appState = AppState.SETTINGS_NOT_SET;
+
     public Button startBtn;
     public Label statusLabel;
     public Button changeGameDir;
@@ -34,15 +37,14 @@ public class MainScreenController
     public final UserSettingsService userSettingsService;
 
     private static final Logger log = LoggerFactory.getLogger(MainScreenController.class);
+    private final FileCheckService fileCheckService;
 
     @Autowired
-    public MainScreenController(DownloadService downloadService, UserSettingsService userSettingsService)
+    public MainScreenController(DownloadService downloadService, UserSettingsService userSettingsService, FileCheckService fileCheckService)
     {
         this.downloadService = downloadService;
         this.userSettingsService = userSettingsService;
-
-        // Load user settings
-        this.userSettingsService.loadSetting();
+        this.fileCheckService = fileCheckService;
     }
 
     public void startDownloading()
@@ -94,6 +96,14 @@ public class MainScreenController
             statusLabel.setText("Download completed, found: " + patchListDownloaded.getPatchListResponse().getPatches().size() + " files");
         });
 
+        try
+        {
+            this.fileCheckService.checkFiles();
+        } catch (IOException e)
+        {
+            log.error("Problems on checking process...");
+        }
+
         this.userSettingsService.getUserSettings().setLatestPatchList(patchListDownloaded.getPatchListResponse());
         this.userSettingsService.saveSettings();
     }
@@ -102,10 +112,14 @@ public class MainScreenController
     public void handleUserSettingsUpdatedEvent(UserSettingsUpdated userSettingsUpdated)
     {
         Platform.runLater(this::renderSettingsValues);
+        if (appState == AppState.SETTINGS_NOT_SET) {
+            appState = AppState.READY_TO_PLAY;
+        }
     }
 
     @FXML
     void initialize(){
-        this.renderSettingsValues();
+        // Load user settings
+        this.userSettingsService.loadSetting();
     }
 }

@@ -37,4 +37,14 @@ public class DownloadService
 
         return CompletableFuture.completedFuture(downloaderConfiguration);
     }
+
+    public PatchListResponse getDownloaderConfiguration()
+    {
+        return downloaderConfiguration;
+    }
+
+    public void setDownloaderConfiguration(PatchListResponse downloaderConfiguration)
+    {
+        this.downloaderConfiguration = downloaderConfiguration;
+    }
 }
