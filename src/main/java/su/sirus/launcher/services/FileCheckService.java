@@ -1,8 +1,5 @@
 package su.sirus.launcher.services;
 
-import com.google.common.hash.HashCode;
-import com.google.common.hash.Hashing;
-import com.google.common.io.Files;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,19 +7,15 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
-import org.springframework.web.client.RestTemplate;
 import su.sirus.launcher.AppState;
 import su.sirus.launcher.entities.Patch;
 import su.sirus.launcher.events.ChangeApplicationState;
-import su.sirus.launcher.events.PatchListDownloaded;
+import su.sirus.launcher.events.FileCheckProgress;
 import su.sirus.launcher.responses.PatchListResponse;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.util.concurrent.CompletableFuture;
 
 @Service
 public class FileCheckService
@@ -60,6 +53,8 @@ public class FileCheckService
             Long sizeToCheck = downloadService.getDownloaderConfiguration().getPatches().stream().mapToLong(Patch::getSize).sum();
             Long sizeChecked = 0L;
 
+            this.publisher.publishEvent(new FileCheckProgress(sizeChecked, sizeToCheck));
+
             for (Patch patch : downloadService.getDownloaderConfiguration().getPatches())
             {
                 File file = new File(gamePath + patch.getPath() + patch.getFilename());
@@ -78,6 +73,8 @@ public class FileCheckService
 
                 sizeChecked += patch.getSize();
                 patch.setChecked(true);
+
+                this.publisher.publishEvent(new FileCheckProgress(sizeChecked, sizeToCheck));
             }
 
             if (downloadService.getDownloaderConfiguration().getPatches().stream().anyMatch(Patch::isShouldDownload))

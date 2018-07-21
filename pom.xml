@@ -57,6 +57,12 @@
             <artifactId>guava</artifactId>
             <version>25.1-jre</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.google.api-client</groupId>
+            <artifactId>google-api-client</artifactId>
+            <version>1.23.0</version>
+        </dependency>
     </dependencies>
 
     <build>

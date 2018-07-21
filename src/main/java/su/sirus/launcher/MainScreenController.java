@@ -6,6 +6,7 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
 import javafx.stage.DirectoryChooser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import su.sirus.launcher.entities.Patch;
+import su.sirus.launcher.events.ChangeApplicationState;
+import su.sirus.launcher.events.FileCheckProgress;
 import su.sirus.launcher.events.PatchListDownloaded;
 import su.sirus.launcher.events.UserSettingsUpdated;
 import su.sirus.launcher.services.DownloadService;
@@ -29,8 +33,9 @@ public class MainScreenController
 
     public Button startBtn;
     public Label statusLabel;
-    public Button changeGameDir;
+    public ProgressBar progressBar;
 
+    public Button changeGameDir;
     public Label settingsGamePath;
 
     public final DownloadService downloadService;
@@ -49,6 +54,10 @@ public class MainScreenController
 
     public void startDownloading()
     {
+        if (this.appState == AppState.DOWNLOADING_FILES) {
+            return;
+        }
+
         downloadService.downloadPatchList();
     }
 
@@ -117,8 +126,30 @@ public class MainScreenController
         }
     }
 
+    @EventListener
+    public void handleFileCheckProgress(FileCheckProgress progress)
+    {
+        Platform.runLater(() -> progressBar.setProgress((double)progress.getChecked() / progress.getSizeTocheck()));
+    }
+
+    @EventListener
+    public void handleChangeApplicationState(ChangeApplicationState applicationState)
+    {
+        if (applicationState.getAppState() == AppState.DOWNLOADING_FILES)
+        {
+            downloadService.getDownloaderConfiguration().getPatches().stream().filter(Patch::isShouldDownload).forEach(downloadService::downloadFile);
+        }
+
+        if (applicationState.getAppState() == AppState.FORCE_CHECK_FILES)
+        {
+            this.appState = AppState.CHECKING_FILES;
+            downloadService.getDownloaderConfiguration().getPatches().stream().filter(Patch::isShouldDownload).forEach(downloadService::downloadFile);
+        }
+    }
+
     @FXML
-    void initialize(){
+    void initialize()
+    {
         // Load user settings
         this.userSettingsService.loadSetting();
     }
