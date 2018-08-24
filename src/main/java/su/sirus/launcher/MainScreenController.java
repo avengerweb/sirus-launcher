@@ -29,10 +29,11 @@ import java.io.IOException;
 @Component
 public class MainScreenController
 {
-    AppState appState = AppState.SETTINGS_NOT_SET;
+    private AppState appState = AppState.SETTINGS_NOT_SET;
 
     public Button startBtn;
     public Label statusLabel;
+    public Label launcherStatus;
     public ProgressBar progressBar;
 
     public Button changeGameDir;
@@ -54,7 +55,7 @@ public class MainScreenController
 
     public void startDownloading()
     {
-        if (this.appState == AppState.DOWNLOADING_FILES) {
+        if (this.getAppState() == AppState.DOWNLOADING_FILES) {
             return;
         }
 
@@ -75,6 +76,15 @@ public class MainScreenController
     {
     }
 
+    /**
+     * Run force check
+     * @param actionEvent
+     */
+    public void forceCheckClient(ActionEvent actionEvent)
+    {
+//        publisher.publishEvent(new ChangeApplicationState(AppState.FORCE_CHECK_FILES));
+    }
+
     /* Settings actions */
     /**
      * Init select directory dialog
@@ -86,6 +96,11 @@ public class MainScreenController
         DirectoryChooser directoryChooser = new DirectoryChooser();
         directoryChooser.setTitle("Выберите дирректорию с игрой");
         File selectedFile = directoryChooser.showDialog(((Node)actionEvent.getTarget()).getScene().getWindow());
+
+        if (selectedFile != null) {
+            return;
+        }
+
         this.userSettingsService.getUserSettings().setGamePath(selectedFile.getPath());
         this.userSettingsService.refresh();
         this.userSettingsService.saveSettings();
@@ -102,7 +117,7 @@ public class MainScreenController
     public void handlePatchListDownloadedEvent(PatchListDownloaded patchListDownloaded)
     {
         Platform.runLater(() -> {
-            statusLabel.setText("Download completed, found: " + patchListDownloaded.getPatchListResponse().getPatches().size() + " files");
+            statusLabel.setText("Download patch list, found: " + patchListDownloaded.getPatchListResponse().getPatches().size() + " files");
         });
 
         try
@@ -121,20 +136,25 @@ public class MainScreenController
     public void handleUserSettingsUpdatedEvent(UserSettingsUpdated userSettingsUpdated)
     {
         Platform.runLater(this::renderSettingsValues);
-        if (appState == AppState.SETTINGS_NOT_SET) {
-            appState = AppState.READY_TO_PLAY;
+        if (getAppState() == AppState.SETTINGS_NOT_SET) {
+            setAppState(AppState.READY_TO_PLAY);
         }
     }
 
     @EventListener
     public void handleFileCheckProgress(FileCheckProgress progress)
     {
-        Platform.runLater(() -> progressBar.setProgress((double)progress.getChecked() / progress.getSizeTocheck()));
+        Platform.runLater(() -> {
+            progressBar.setProgress((double)progress.getChecked() / progress.getSizeTocheck());
+            statusLabel.setText("Downloading / Checking  " + progress.getChecked() / 1024 / 1024 + " / " + progress.getSizeTocheck() / 1024 / 1024);
+        });
     }
 
     @EventListener
     public void handleChangeApplicationState(ChangeApplicationState applicationState)
     {
+        setAppState(applicationState.getAppState());
+
         if (applicationState.getAppState() == AppState.DOWNLOADING_FILES)
         {
             downloadService.getDownloaderConfiguration().getPatches().stream().filter(Patch::isShouldDownload).forEach(downloadService::downloadFile);
@@ -142,7 +162,7 @@ public class MainScreenController
 
         if (applicationState.getAppState() == AppState.FORCE_CHECK_FILES)
         {
-            this.appState = AppState.CHECKING_FILES;
+            setAppState(AppState.CHECKING_FILES);
             downloadService.getDownloaderConfiguration().getPatches().stream().filter(Patch::isShouldDownload).forEach(downloadService::downloadFile);
         }
     }
@@ -152,5 +172,14 @@ public class MainScreenController
     {
         // Load user settings
         this.userSettingsService.loadSetting();
+    }
+
+    public AppState getAppState() {
+        return appState;
+    }
+
+    public void setAppState(AppState appState) {
+        Platform.runLater(() -> launcherStatus.setText(appState.toString()));
+        this.appState = appState;
     }
 }

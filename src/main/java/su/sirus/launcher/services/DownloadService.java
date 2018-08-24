@@ -5,6 +5,8 @@ import com.google.api.client.googleapis.media.MediaHttpDownloaderProgressListene
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.apache.ApacheHttpTransport;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Async;
@@ -31,6 +33,7 @@ public class DownloadService
     private PatchListResponse downloaderConfiguration;
     private final ApplicationEventPublisher publisher;
     private UserSettingsService userSettingsService;
+    private static final Logger log = LoggerFactory.getLogger(DownloadService.class);
 
     @Autowired
     public DownloadService(ApplicationEventPublisher publisher, UserSettingsService userSettingsService)
@@ -68,8 +71,8 @@ public class DownloadService
     {
         private Patch patch;
 
-        public ProgressListener(Patch patch) {
-
+        public ProgressListener(Patch patch)
+        {
             this.patch = patch;
         }
 
@@ -115,6 +118,9 @@ public class DownloadService
         }
     }
 
+    /**
+     * Send update progress event every 500ms
+     */
     @Scheduled(fixedRate = 500)
     public void progressUpdate()
     {
