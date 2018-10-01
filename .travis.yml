@@ -10,6 +10,7 @@ before_script:
   - export APP_VERSION=$(bash contrib/new-version.sh)
   - mvn versions:set -DnewVersion=$APP_VERSION
 before_deploy:
+  - export APP_VERSION=$(bash contrib/new-version.sh)
   - git config --local user.name "avengerweb"
   - git config --local user.email "i@avenger-web.com"
   - git add pom.xml
