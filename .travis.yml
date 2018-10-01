@@ -20,8 +20,8 @@ before_deploy:
 deploy:
   provider: releases
   api_key: $GITHUB_TOKEN
-  file:
-  - "target/sirus-launcher-${APP_VERSION}.exe"
+  file_glob: true
+  file: directory/*
   skip_cleanup: true
   on:
     branch: master
