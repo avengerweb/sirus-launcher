@@ -15,7 +15,7 @@ before_deploy:
   - git add pom.xml
   - git commit -m "[Automatic-Release] New version $APP_VERSION"
   - git tag "$APP_VERSION"
-  - "git push origin HEAD:$TRAVIS_BRANCH"
+  - "git push origin HEAD:$TRAVIS_BRANCH https://avengerweb:$GITHUB_TOKEN@github.com/avengerweb/sirus-launcher.git"
 deploy:
   provider: releases
   api_key: $GITHUB_TOKEN
