@@ -5,6 +5,7 @@ services:
 cache:
   directories:
   - "$HOME/.cache"
+if: commit_message !~ /(Automatic-Release)/
 before_script:
   - export APP_VERSION=$(bash contrib/new-version.sh)
   - mvn versions:set -DnewVersion=$APP_VERSION
