@@ -1,0 +1,19 @@
+sudo: false
+language: java
+services:
+- docker
+cache:
+  directories:
+  - "$HOME/.cache"
+before_deploy:
+  - git config --local user.name "avengerweb"
+  - git config --local user.email "i@avenger-web.com"
+  - git tag "release-$TRAVIS_BUILD_NUMBER"
+deploy:
+  provider: releases
+  api_key: $GITHUB_TOKEN
+  file:
+  - "target/sirus-launcher-1.0.0.exe"
+  skip_cleanup: true
+  on:
+    tags: true
