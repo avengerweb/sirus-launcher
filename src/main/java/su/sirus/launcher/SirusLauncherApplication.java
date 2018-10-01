@@ -43,7 +43,7 @@ public class SirusLauncherApplication extends Application {
     @Override
     public void stop() throws Exception
     {
-        springContext.stop();
+        springContext.close();
     }
 
     public static void main(String[] args) {
