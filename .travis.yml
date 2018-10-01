@@ -12,10 +12,11 @@ before_script:
 before_deploy:
   - git config --local user.name "avengerweb"
   - git config --local user.email "i@avenger-web.com"
+  - git checkout -b version-update
   - git add pom.xml
   - git commit -m "[Automatic-Release] New version $APP_VERSION"
   - git tag "$APP_VERSION"
-  - "git push https://avengerweb:$GITHUB_TOKEN@github.com/avengerweb/sirus-launcher.git"
+  - "git push https://avengerweb:$GITHUB_TOKEN@github.com/avengerweb/sirus-launcher.git version-update:master"
 deploy:
   provider: releases
   api_key: $GITHUB_TOKEN
