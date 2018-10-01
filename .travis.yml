@@ -5,15 +5,22 @@ services:
 cache:
   directories:
   - "$HOME/.cache"
+before_script:
+  - export APP_VERSION=$(bash contrib/new-version.sh)
+  - mvn versions:set -DnewVersion=$APP_VERSION
 before_deploy:
   - git config --local user.name "avengerweb"
   - git config --local user.email "i@avenger-web.com"
-  - git tag "release-$TRAVIS_BUILD_NUMBER"
+  - git add pom.xml
+  - git commit -m "[Automatic-Release] New version $APP_VERSION"
+  - git tag "$APP_VERSION"
+  - git push
 deploy:
   provider: releases
   api_key: $GITHUB_TOKEN
   file:
-  - "target/sirus-launcher-1.0.0.exe"
+  - "target/sirus-launcher-${APP_VERSION}.exe"
   skip_cleanup: true
   on:
-    tags: true
+    branch: master
+    tags: false
