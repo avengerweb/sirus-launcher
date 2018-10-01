@@ -5,7 +5,7 @@
 
     <groupId>su.sirus.launcher</groupId>
     <artifactId>sirus-launcher</artifactId>
-    <version>1.0.13</version>
+    <version>1.0.14</version>
     <packaging>jar</packaging>
 
     <name>launcher</name>
